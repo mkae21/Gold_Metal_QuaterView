@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Follow : MonoBehaviour
 {
-    public Transform target;
+    public Transform target; // target이라는 좌표로 이동 시키려고 하는 것
     public Vector3 offset;
 
     private void Update()
