@@ -8,13 +8,15 @@ public class Player : MonoBehaviour
 
     float hAxis;
     float vAxis;
-    public int Speed;
+    public float Speed;
 
     bool wDown;
     bool jDown;
     bool isJump;
+    bool isDodge;
 
     Vector3 moveVec;
+    Vector3 dodgeVec;//회피 도중 방향전환이 되지 않도록 회피방향 Vector3 추가
 
     Animator anim;
 
@@ -33,6 +35,7 @@ public class Player : MonoBehaviour
         Move();
         Turn();
         Jump();
+        Dodge();
     }
 
     void GetInput()
@@ -46,6 +49,11 @@ public class Player : MonoBehaviour
     void Move()
     {
         moveVec = new Vector3(hAxis, 0, vAxis).normalized;
+
+        if (isDodge)//회피 중에는 움직임 벡터 -> 회피방향 벡터로 바뀌도록 구현.
+        {
+            moveVec = dodgeVec;
+        }
 
         if (wDown)
         {
@@ -67,20 +75,41 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (jDown && !isJump) //Jump가 false일 때 만 사용가능하다.s
+        if (jDown && moveVec == Vector3.zero && !isJump && !isDodge) //Jump,Dodge가 false일 때 만 사용가능하다, 두 개 동시 실행 불가능
+                                                                     
         {
             rigid.AddForce(Vector3.up * 18, ForceMode.Impulse);
             anim.SetBool("isJump",true);
-            anim.SetTrigger("doJump");//trigger는 설정 할 필요 없다.
+            anim.SetTrigger("doJump");//trigger는 true,false 설정 할 필요 없다.
             isJump = true;
         }
+    }
+
+    void Dodge()
+    { 
+        if(jDown && moveVec != Vector3.zero && !isJump && !isDodge)//Dodge와 Jump가 동시에 실행되지 않도록 설정
+        {
+            dodgeVec = moveVec;
+            Speed *= 2;
+            anim.SetTrigger("doDodge");
+            isDodge = true;
+
+            Invoke("DodgeOut", 0.5f);//0.5초 뒤에 DodgeOut()함수 실행
+        }
+    }
+
+    void DodgeOut()//isDodge를 false로 바꿔야 함
+    {
+        Speed *= 0.5f;
+        isDodge = false;
+
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.tag == "Floor")
         {
-            anim.SetBool("isJump", false);
+            anim.SetBool("isJump", false);//애니메이션
             isJump = false;
 
         }
