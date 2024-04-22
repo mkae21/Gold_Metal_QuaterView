@@ -98,7 +98,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void DodgeOut()//isDodge를 false로 바꿔야 함
+    void DodgeOut()//isDodge를 false로 바꿔야 함,Land animation 실행하기 위해서
     {
         Speed *= 0.5f;
         isDodge = false;
