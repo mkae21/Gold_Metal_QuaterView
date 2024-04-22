@@ -9,12 +9,15 @@ public class Player : MonoBehaviour
     float hAxis;
     float vAxis;
     public int Speed;
+
     bool wDown;
     bool jDown;
     bool isJump;
 
     Vector3 moveVec;
+
     Animator anim;
+
     Rigidbody rigid;
 
     void Awake()
@@ -37,7 +40,7 @@ public class Player : MonoBehaviour
         hAxis = Input.GetAxisRaw("Horizontal");
         vAxis = Input.GetAxisRaw("Vertical");
         wDown = Input.GetButton("Walk");//shitf는 계속 누르고 있을 때만 작동 되도록 GetButton()사용
-        jDown = Input.GetButtonDown("Jump");//ㅓ
+        jDown = Input.GetButtonDown("Jump");//점프는 누른 그 순간에 하는 것
     }
     
     void Move()
@@ -66,7 +69,9 @@ public class Player : MonoBehaviour
     {
         if (jDown && !isJump) //Jump가 false일 때 만 사용가능하다.s
         {
-            rigid.AddForce(Vector3.up * 10, ForceMode.Impulse);
+            rigid.AddForce(Vector3.up * 18, ForceMode.Impulse);
+            anim.SetBool("isJump",true);
+            anim.SetTrigger("doJump");//trigger는 설정 할 필요 없다.
             isJump = true;
         }
     }
@@ -75,7 +80,9 @@ public class Player : MonoBehaviour
     {
         if(collision.gameObject.tag == "Floor")
         {
+            anim.SetBool("isJump", false);
             isJump = false;
+
         }
     }
 }
